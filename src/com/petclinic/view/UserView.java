@@ -4,31 +4,29 @@ import com.petclinic.model.User;
 import javax.swing.*;
 import java.awt.*;
 
-public class UserView extends JFrame {
+public class UserView extends JPanel implements NavigableView {
     private JTextField usernameField;
     private JPasswordField passwordField;
     private JButton loginButton;
     private JButton registerButton;
     private JButton logoutButton;
-    private JPanel loginPanel;
-    private JPanel mainPanel;
+    private JPanel authenticationPanel;
+    private JPanel dashboardPanel;
     private JLabel titleLabel;
     private JLabel welcomeLabel;
     private boolean isLoginMode = true;
+    private JButton petButton;
 
     public UserView() {
-        setTitle("HỆ THỐNG QUẢN LÝ PHÒNG KHÁM THÚ CƯNG");
-        setSize(500, 300);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
-        initializeComponents();
-        setContentPane(loginPanel);
+        initializeAuthenticationPanel();
+        initializeDashboardPanel();
+        setLayout(new BorderLayout());
+        add(authenticationPanel, BorderLayout.CENTER);
     }
 
-    private void initializeComponents() {
-        // ĐĂNG NHẬP/ĐĂNG KÝ UI
-        loginPanel = new JPanel();
-        loginPanel.setLayout(new GridBagLayout());
+    private void initializeAuthenticationPanel() {
+        authenticationPanel = new JPanel();
+        authenticationPanel.setLayout(new GridBagLayout());
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 5, 5, 5);
         titleLabel = new JLabel("ĐĂNG NHẬP TÀI KHOẢN");
@@ -36,25 +34,25 @@ public class UserView extends JFrame {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.gridwidth = 2;
-        loginPanel.add(titleLabel, gbc);
+        authenticationPanel.add(titleLabel, gbc);
         JLabel usernameLabel = new JLabel("TÀI KHOẢN:");
         gbc.gridx = 0;
         gbc.gridy = 1;
         gbc.gridwidth = 1;
         gbc.anchor = GridBagConstraints.WEST;
-        loginPanel.add(usernameLabel, gbc);
+        authenticationPanel.add(usernameLabel, gbc);
         usernameField = new JTextField(20);
         gbc.gridx = 1;
         gbc.gridy = 1;
-        loginPanel.add(usernameField, gbc);
+        authenticationPanel.add(usernameField, gbc);
         JLabel passwordLabel = new JLabel("MẬT KHẨU:");
         gbc.gridx = 0;
         gbc.gridy = 2;
-        loginPanel.add(passwordLabel, gbc);
+        authenticationPanel.add(passwordLabel, gbc);
         passwordField = new JPasswordField(20);
         gbc.gridx = 1;
         gbc.gridy = 2;
-        loginPanel.add(passwordField, gbc);
+        authenticationPanel.add(passwordField, gbc);
         JPanel buttonPanel = new JPanel();
         loginButton = new JButton("ĐĂNG NHẬP");
         registerButton = new JButton("ĐĂNG KÝ");
@@ -64,10 +62,12 @@ public class UserView extends JFrame {
         gbc.gridy = 3;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
-        loginPanel.add(buttonPanel, gbc);
-        // BẢNG ĐIỀU KHIỂN UI
-        mainPanel = new JPanel();
-        mainPanel.setLayout(new BorderLayout());
+        authenticationPanel.add(buttonPanel, gbc);
+    }
+
+    private void initializeDashboardPanel() {
+        dashboardPanel = new JPanel();
+        dashboardPanel.setLayout(new BorderLayout());
         JPanel headerPanel = new JPanel(new BorderLayout());
         welcomeLabel = new JLabel("BẢNG ĐIỀU KHIỂN");
         welcomeLabel.setFont(new Font("Arial", Font.BOLD, 18));
@@ -75,10 +75,10 @@ public class UserView extends JFrame {
         headerPanel.add(welcomeLabel, BorderLayout.CENTER);
         logoutButton = new JButton("ĐĂNG XUẤT");
         headerPanel.add(logoutButton, BorderLayout.EAST);
-        mainPanel.add(headerPanel, BorderLayout.NORTH);
+        dashboardPanel.add(headerPanel, BorderLayout.NORTH);
         JPanel functionsPanel = new JPanel(new GridLayout(2, 2, 10, 10));
         functionsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        JButton petButton = new JButton("QUẢN LÝ HỒ SƠ THÚ CƯNG");
+        petButton = new JButton("QUẢN LÝ HỒ SƠ THÚ CƯNG");
         JButton ownerButton = new JButton("QUẢN LÝ HỒ SƠ CHỦ NUÔI");
         JButton appointmentButton = new JButton("QUẢN LÝ LỊCH HẸN");
         JButton medicalButton = new JButton("QUẢN LÝ HỒ SƠ Y TẾ");
@@ -86,19 +86,39 @@ public class UserView extends JFrame {
         functionsPanel.add(ownerButton);
         functionsPanel.add(appointmentButton);
         functionsPanel.add(medicalButton);
-        mainPanel.add(functionsPanel, BorderLayout.CENTER);
+        dashboardPanel.add(functionsPanel, BorderLayout.CENTER);
     }
     
-    public void switchToLoginPanel() {
-        setContentPane(loginPanel);
+    public void showLogin() {
+        clearFields();
+        isLoginMode = true;
+        titleLabel.setText("ĐĂNG NHẬP TÀI KHOẢN");
+        removeAll();
+        add(authenticationPanel, BorderLayout.CENTER);
         revalidate();
         repaint();
     }
-    
-    public void switchToMainPanel() {
-        setContentPane(mainPanel);
+
+    public void showRegister() {
+        clearFields();
+        isLoginMode = false;
+        titleLabel.setText("ĐĂNG KÝ TÀI KHOẢN");
+        removeAll();
+        add(authenticationPanel, BorderLayout.CENTER);
         revalidate();
         repaint();
+    }
+
+    public void showDashboard() {
+        removeAll();
+        add(dashboardPanel, BorderLayout.CENTER);
+        revalidate();
+        repaint();
+    }
+
+    public void clearFields() {
+        passwordField.setText("");
+        usernameField.setText("");
     }
     
     public void showMessage(String message) { JOptionPane.showMessageDialog(this, message); }
@@ -114,12 +134,12 @@ public class UserView extends JFrame {
     public JButton getRegisterButton() { return registerButton; }
     
     public JButton getLogoutButton() { return logoutButton; }
-    
-    public void setPassword(String text) { passwordField.setText(text); }
-    
-    public void setUsername(String text) { usernameField.setText(text); }
 
-    public void setLoginMode(boolean mode) { this.isLoginMode = mode; }
-    
-    public void setTitleLabel(String text) { titleLabel.setText(text); }
+    public JButton getPetButton() { return petButton; }
+
+    @Override
+    public void showView() { this.setVisible(true); }
+
+    @Override
+    public void hideView() { this.setVisible(false); }
 }

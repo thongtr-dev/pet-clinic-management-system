@@ -33,7 +33,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public boolean isUsernameTaken(String username) throws SQLException {
-        String sql = "SELECT 1 FROM users WHERE username = ? LIMIT 1";
+        String sql = "SELECT 1 FROM users WHERE username = ?";
         try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
@@ -43,7 +43,7 @@ public class UserDAOImpl implements UserDAO {
 
     @Override
     public User verify(String username, String password) throws SQLException {
-        String sql = "SELECT * FROM users WHERE username = ? AND password = ? LIMIT 1";
+        String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
         try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setString(1, username);
             stmt.setString(2, password);

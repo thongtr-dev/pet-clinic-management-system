@@ -2,135 +2,160 @@ package com.petclinic.dao;
 
 import com.petclinic.model.Pet;
 import com.petclinic.util.DatabaseConnection;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
 public class PetDAOImpl implements PetDAO {
-    @Override
-    public void addPet(Pet pet) throws SQLException {
-        String sql = "INSERT INTO pets (name, species, breed, age, medical_history, owner_id) VALUES (?, ?, ?, ?, ?, ?)";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
-            ps.setString(1, pet.getName());
-            ps.setString(2, pet.getSpecies());
-            ps.setString(3, pet.getBreed());
-            ps.setInt(4, pet.getAge());
-            ps.setString(5, pet.getMedicalHistory());
-            ps.setInt(6, pet.getOwnerId());
-
-            int affectedRows = ps.executeUpdate();
-
-            if (affectedRows == 0) {
-                throw new SQLException("Creating pet failed, no rows affected.");
+    private Integer getFirstAvailableId() throws SQLException {
+        String sql = "SELECT MIN(t1.id + 1) AS next_id FROM pets t1 LEFT JOIN pets t2 ON t1.id + 1 = t2.id WHERE t2.id IS NULL";
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                Integer nextId = rs.getInt("next_id");
+                return rs.wasNull() ? 1 : nextId;
             }
+        }
+        return 1;
+    }
 
-            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    pet.setId(generatedKeys.getInt(1));
-                } else {
-                    throw new SQLException("Creating pet failed, no ID obtained.");
+    @Override
+    public boolean add(Pet pet) throws SQLException {
+        Integer availableId = getFirstAvailableId();
+        String sql;
+        if (availableId != null) {
+            sql = "INSERT INTO pets (id, name, species, breed, age, medical_history, owner_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+            try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, availableId);
+                stmt.setString(2, pet.getName());
+                stmt.setString(3, pet.getSpecies());
+                stmt.setString(4, pet.getBreed());
+                stmt.setInt(5, pet.getAge());
+                stmt.setString(6, pet.getMedicalHistory());
+                if (pet.getOwnerId() != null) {
+                    stmt.setInt(7, pet.getOwnerId());
+                }
+                else {
+                    stmt.setNull(7, Types.INTEGER);
+                }
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    pet.setId(availableId);
+                    return true;
                 }
             }
         }
-    }
-
-    @Override
-    public Pet getPetById(int petId) throws SQLException {
-        String sql = "SELECT * FROM pets WHERE id = ?";
-        Pet pet = null;
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, petId);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    pet = extractPetFromResultSet(rs);
+        else {
+            sql = "INSERT INTO pets (name, species, breed, age, medical_history, owner_id) VALUES (?, ?, ?, ?, ?, ?)";
+            try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                stmt.setString(1, pet.getName());
+                stmt.setString(2, pet.getSpecies());
+                stmt.setString(3, pet.getBreed());
+                stmt.setInt(4, pet.getAge());
+                stmt.setString(5, pet.getMedicalHistory());
+                if (pet.getOwnerId() != null) {
+                    stmt.setInt(6, pet.getOwnerId());
+                }
+                else {
+                    stmt.setNull(6, Types.INTEGER);
+                }
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                        if (generatedKeys.next()) {
+                            pet.setId(generatedKeys.getInt(1));
+                        }
+                    }
+                    return true;
                 }
             }
         }
-        return pet;
+        return false;
     }
 
     @Override
-    public List<Pet> getAllPets() throws SQLException {
-        String sql = "SELECT * FROM pets";
-        List<Pet> pets = new ArrayList<>();
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-
-            while (rs.next()) {
-                pets.add(extractPetFromResultSet(rs));
-            }
-        }
-        return pets;
-    }
-
-    @Override
-    public List<Pet> getPetsByOwnerId(int ownerId) throws SQLException {
-        String sql = "SELECT * FROM pets WHERE owner_id = ?";
-        List<Pet> pets = new ArrayList<>();
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, ownerId);
-
-            try (ResultSet rs = ps.executeQuery()) {
-                while (rs.next()) {
-                    pets.add(extractPetFromResultSet(rs));
-                }
-            }
-        }
-        return pets;
-    }
-
-    @Override
-    public void updatePet(Pet pet) throws SQLException {
+    public boolean update(Pet pet) throws SQLException {
         String sql = "UPDATE pets SET name = ?, species = ?, breed = ?, age = ?, medical_history = ?, owner_id = ? WHERE id = ?";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, pet.getName());
-            ps.setString(2, pet.getSpecies());
-            ps.setString(3, pet.getBreed());
-            ps.setInt(4, pet.getAge());
-            ps.setString(5, pet.getMedicalHistory());
-            ps.setInt(6, pet.getOwnerId());
-            ps.setInt(7, pet.getId());
-
-            ps.executeUpdate();
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, pet.getName());
+            stmt.setString(2, pet.getSpecies());
+            stmt.setString(3, pet.getBreed());
+            stmt.setInt(4, pet.getAge());
+            stmt.setString(5, pet.getMedicalHistory());
+            if (pet.getOwnerId() != null) {
+                stmt.setInt(6, pet.getOwnerId());
+            }
+            else {
+                stmt.setNull(6, Types.INTEGER);
+            }
+            stmt.setInt(7, pet.getId());
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
         }
     }
 
     @Override
-    public void deletePet(int petId) throws SQLException {
+    public boolean delete(int id) throws SQLException {
         String sql = "DELETE FROM pets WHERE id = ?";
-
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, petId);
-            ps.executeUpdate();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            int rowsAffected = stmt.executeUpdate();
+            return rowsAffected > 0;
         }
     }
 
-    private Pet extractPetFromResultSet(ResultSet rs) throws SQLException {
-        return new Pet(
-                rs.getInt("id"),
-                rs.getString("name"),
-                rs.getString("species"),
-                rs.getString("breed"),
-                rs.getInt("age"),
-                rs.getString("medical_history"),
-                rs.getInt("owner_id")
-        );
+    @Override
+    public Pet getById(int id) throws SQLException {
+        String sql = "SELECT p.*, o.full_name FROM pets p LEFT JOIN owners o ON p.owner_id = o.id WHERE p.id = ?";
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Pet pet = new Pet();
+                    pet.setId(rs.getInt("id"));
+                    pet.setName(rs.getString("name"));
+                    pet.setSpecies(rs.getString("species"));
+                    pet.setBreed(rs.getString("breed"));
+                    pet.setAge(rs.getInt("age"));
+                    pet.setMedicalHistory(rs.getString("medical_history"));
+                    int ownerId = rs.getInt("owner_id");
+                    if (!rs.wasNull()) {
+                        pet.setOwnerId(ownerId);
+                        pet.setOwnerName(rs.getString("full_name"));
+                    }
+                    return pet;
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public List<Pet> getAll() throws SQLException {
+        List<Pet> pets = new ArrayList<>();
+        String sql = "SELECT p.*, o.full_name FROM pets p LEFT JOIN owners o ON p.owner_id = o.id";
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Pet pet = new Pet();
+                pet.setId(rs.getInt("id"));
+                pet.setName(rs.getString("name"));
+                pet.setSpecies(rs.getString("species"));
+                pet.setBreed(rs.getString("breed"));
+                pet.setAge(rs.getInt("age"));
+                pet.setMedicalHistory(rs.getString("medical_history"));
+                int ownerId = rs.getInt("owner_id");
+                if (!rs.wasNull()) {
+                    pet.setOwnerId(ownerId);
+                    pet.setOwnerName(rs.getString("full_name"));
+                }
+                pets.add(pet);
+            }
+        }
+        return pets;
     }
 }
