@@ -7,26 +7,60 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OwnerDAOImpl implements OwnerDAO {
+    private Integer getFirstAvailableId() throws SQLException {
+        String sql = "SELECT MIN(t1.id + 1) AS next_id FROM owners t1 LEFT JOIN owners t2 ON t1.id + 1 = t2.id WHERE t2.id IS NULL";
+        try (Connection conn = DatabaseConnection.getConnection(); 
+             PreparedStatement stmt = conn.prepareStatement(sql); 
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                Integer nextId = rs.getInt("next_id");
+                return rs.wasNull() ? 1 : nextId;
+            }
+        }
+        return 1;
+    }
+
     @Override
     public boolean add(Owner owner) throws SQLException {
-        String sql = "INSERT INTO owners (name, email, phone, address) VALUES (?, ?, ?, ?)";
+        Integer availableId = getFirstAvailableId();
+        String sql;
         
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            
-            stmt.setString(1, owner.getName());
-            stmt.setString(2, owner.getEmail());
-            stmt.setString(3, owner.getPhone());
-            stmt.setString(4, owner.getAddress());
-            
-            int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected > 0) {
-                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                    if (generatedKeys.next()) {
-                        owner.setId(generatedKeys.getInt(1));
-                    }
+        if (availableId != null) {
+            sql = "INSERT INTO owners (id, full_name, email, phone, address) VALUES (?, ?, ?, ?, ?)";
+            try (Connection conn = DatabaseConnection.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(sql)) {
+                
+                stmt.setInt(1, availableId);
+                stmt.setString(2, owner.getName());
+                stmt.setString(3, owner.getEmail());
+                stmt.setString(4, owner.getPhone());
+                stmt.setString(5, owner.getAddress());
+                
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    owner.setId(availableId);
+                    return true;
                 }
-                return true;
+            }
+        } else {
+            sql = "INSERT INTO owners (full_name, email, phone, address) VALUES (?, ?, ?, ?)";
+            try (Connection conn = DatabaseConnection.getConnection();
+                 PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+                
+                stmt.setString(1, owner.getName());
+                stmt.setString(2, owner.getEmail());
+                stmt.setString(3, owner.getPhone());
+                stmt.setString(4, owner.getAddress());
+                
+                int rowsAffected = stmt.executeUpdate();
+                if (rowsAffected > 0) {
+                    try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                        if (generatedKeys.next()) {
+                            owner.setId(generatedKeys.getInt(1));
+                        }
+                    }
+                    return true;
+                }
             }
         }
         return false;
@@ -34,7 +68,7 @@ public class OwnerDAOImpl implements OwnerDAO {
 
     @Override
     public boolean update(Owner owner) throws SQLException {
-        String sql = "UPDATE owners SET name = ?, email = ?, phone = ?, address = ? WHERE id = ?";
+        String sql = "UPDATE owners SET full_name = ?, email = ?, phone = ?, address = ? WHERE id = ?";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -52,7 +86,6 @@ public class OwnerDAOImpl implements OwnerDAO {
 
     @Override
     public boolean delete(int ownerId) throws SQLException {
-        // Kiểm tra xem chủ nuôi có thú cưng không trước khi xóa
         boolean hasPets = checkOwnerHasPets(ownerId);
         if (hasPets) {
             throw new SQLException("Không thể xóa chủ nuôi này vì còn thú cưng liên kết với hồ sơ.");
@@ -88,7 +121,7 @@ public class OwnerDAOImpl implements OwnerDAO {
 
     @Override
     public Owner getById(int id) throws SQLException {
-        String sql = "SELECT * FROM owners WHERE id = ?";
+        String sql = "SELECT o.*, COUNT(p.id) AS pet_count FROM owners o LEFT JOIN pets p ON o.id = p.owner_id WHERE o.id = ? GROUP BY o.id";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -99,7 +132,7 @@ public class OwnerDAOImpl implements OwnerDAO {
                 if (rs.next()) {
                     Owner owner = new Owner();
                     owner.setId(rs.getInt("id"));
-                    owner.setName(rs.getString("name"));
+                    owner.setName(rs.getString("full_name"));
                     owner.setEmail(rs.getString("email"));
                     owner.setPhone(rs.getString("phone"));
                     owner.setAddress(rs.getString("address"));
@@ -113,7 +146,7 @@ public class OwnerDAOImpl implements OwnerDAO {
     @Override
     public List<Owner> getAll() throws SQLException {
         List<Owner> owners = new ArrayList<>();
-        String sql = "SELECT * FROM owners";
+        String sql = "SELECT o.*, COUNT(p.id) AS pet_count FROM owners o LEFT JOIN pets p ON o.id = p.owner_id GROUP BY o.id";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
@@ -122,7 +155,7 @@ public class OwnerDAOImpl implements OwnerDAO {
             while (rs.next()) {
                 Owner owner = new Owner();
                 owner.setId(rs.getInt("id"));
-                owner.setName(rs.getString("name"));
+                owner.setName(rs.getString("full_name"));
                 owner.setEmail(rs.getString("email"));
                 owner.setPhone(rs.getString("phone"));
                 owner.setAddress(rs.getString("address"));

@@ -9,7 +9,8 @@ CREATE TABLE users (
 CREATE TABLE owners (
   id INT PRIMARY KEY AUTO_INCREMENT,
   full_name VARCHAR(100) NOT NULL,
-  contact VARCHAR(20),
+  email VARCHAR(20) UNIQUE,
+  phone VARCHAR(10) UNIQUE NOT NULL,
   address VARCHAR(200)
 );
 
