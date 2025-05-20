@@ -7,110 +7,91 @@ import com.petclinic.view.UserView;
 import java.sql.SQLException;
 
 public class UserController {
-    private UserView userView;
-    private UserDAO userDAO;
-    private SessionManager sessionManager;
+    private final UserView userView;
+    private final UserDAO userDAO;
+    private final SessionManager sessionManager;
+    private final NavigationController navigationController;
     
-    public UserController(UserView userView, UserDAO userDAO) {
+    public UserController(UserView userView, UserDAO userDAO, NavigationController navigationController) {
         this.userView = userView;
         this.userDAO = userDAO;
         this.sessionManager = SessionManager.getInstance();
+        this.navigationController = navigationController;
         attachEventListeners();
     }
     
     private void attachEventListeners() {
-        userView.getLoginButton().addActionListener(e -> {
-            if (userView.isLoginMode()) {
-                handleLogin();
-            }
-            else {
-                clearFields();
-                showLoginView();
-            }
-        });
-        userView.getRegisterButton().addActionListener(e -> {
-            if (userView.isLoginMode()) {
-                clearFields();
-                showRegisterView();
-            }
-            else {
-                handleRegister();
-            }
-        });
+        userView.getLoginButton().addActionListener(e -> handleLogin());
+        userView.getRegisterButton().addActionListener(e -> handleRegister());
         userView.getLogoutButton().addActionListener(e -> handleLogout());
+        userView.getPetButton().addActionListener(e -> showPetView());
     }
     
     private void handleLogin() {
-        String username = userView.getUsername();
-        String password = userView.getPassword();
-        if (username.isEmpty() || password.isEmpty()) {
-            userView.showMessage("Hãy nhập đầy đủ thông tin đăng nhập!");
-            return;
-        }
-        try {
-            User user = userDAO.verify(username, password);
-            if (user != null) {
-                sessionManager.login(user);
-                clearFields();
-                showMainView(user);
+        if (userView.isLoginMode()) {
+            String username = userView.getUsername();
+            String password = userView.getPassword();
+            if (username.isEmpty() || password.isEmpty()) {
+                userView.showMessage("Hãy nhập đầy đủ thông tin đăng nhập!");
+                return;
             }
-            else {
-                userView.showMessage("Tài khoản hoặc mật khẩu không hợp lệ!");
+            try {
+                User user = userDAO.verify(username, password);
+                if (user != null) {
+                    sessionManager.login(user);
+                    userView.showDashboard();
+                }
+                else {
+                    userView.showMessage("Tài khoản hoặc mật khẩu không hợp lệ!");
+                }
+            }
+            catch (SQLException ex) {
+                userView.showMessage("Database error: " + ex.getMessage());
             }
         }
-        catch (SQLException ex) {
-            userView.showMessage("Database error: " + ex.getMessage());
+        else {
+            userView.showLogin();
         }
     }
     
     private void handleRegister() {
-        String username = userView.getUsername();
-        String password = userView.getPassword();
-        if (username.isEmpty() || password.isEmpty()) {
-            userView.showMessage("Hãy nhập đầy đủ thông tin đăng ký!");
-            return;
+        if (userView.isLoginMode()) {
+            userView.showRegister();
         }
-        try {
-            User newUser = new User(username, password);
-            boolean isRegistered = userDAO.add(newUser);
-            if (isRegistered) {
-                userView.showMessage("Đăng ký tài khoản thành công!");
-                User user = userDAO.verify(username, password);
-                sessionManager.login(user);
-                clearFields();
-                showMainView(user);
+        else {
+            String username = userView.getUsername();
+            String password = userView.getPassword();
+            if (username.isEmpty() || password.isEmpty()) {
+                userView.showMessage("Hãy nhập đầy đủ thông tin đăng ký!");
+                return;
             }
-            else {
-                userView.showMessage("Tài khoản đã tồn tại!");
+            try {
+                User newUser = new User(username, password);
+                boolean isRegistered = userDAO.add(newUser);
+                if (isRegistered) {
+                    userView.showMessage("Đăng ký tài khoản thành công!");
+                    User user = userDAO.verify(username, password);
+                    sessionManager.login(user);
+                    userView.showDashboard();
+                }
+                else {
+                    userView.showMessage("Tài khoản đã tồn tại!");
+                }
             }
-        }
-        catch (SQLException ex) {
-            userView.showMessage("Database error: " + ex.getMessage());
+            catch (SQLException ex) {
+                userView.showMessage("Database error: " + ex.getMessage());
+            }
         }
     }
-    
+
     private void handleLogout() {
         sessionManager.logout();
-        clearFields();
-        showLoginView();
+        userView.showLogin();
     }
-    
-    public void showLoginView() {
-        userView.setLoginMode(true);
-        userView.setTitleLabel("ĐĂNG NHẬP TÀI KHOẢN");
-        userView.switchToLoginPanel();
-    }
-    
-    public void showRegisterView() {
-        userView.setLoginMode(false);
-        userView.setTitleLabel("ĐĂNG KÝ TÀI KHOẢN");
-        userView.switchToLoginPanel();
-    }
-    
-    public void showMainView(User user) { userView.switchToMainPanel(); }
-    
-    public void clearFields() {
-        userView.setUsername("");
-        userView.setPassword("");
+
+    private void showPetView() {
+        if (navigationController != null) {
+            navigationController.navigateTo("PET_VIEW");
+        }
     }
 }
