@@ -6,7 +6,7 @@ import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.List;
 
-public class PetView extends JPanel implements NavigableView {
+public class PetView extends JPanel {
     private JPanel mainPanel;
     private JTable petTable;
     private DefaultTableModel tableModel;
@@ -246,10 +246,4 @@ public class PetView extends JPanel implements NavigableView {
     public JButton getCancelButton() { return cancelButton; }
 
     public JButton getConfirmButton() { return confirmButton; }
-
-    @Override
-    public void showView() { this.setVisible(true); }
-
-    @Override
-    public void hideView() { this.setVisible(false); }
 }
