@@ -12,66 +12,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PetDAOImpl implements PetDAO {
-    private Integer getFirstAvailableId() throws SQLException {
-        String sql = "SELECT MIN(t1.id + 1) AS next_id FROM pets t1 LEFT JOIN pets t2 ON t1.id + 1 = t2.id WHERE t2.id IS NULL";
-        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql); ResultSet rs = stmt.executeQuery()) {
-            if (rs.next()) {
-                Integer nextId = rs.getInt("next_id");
-                return rs.wasNull() ? 1 : nextId;
-            }
-        }
-        return 1;
-    }
-
     @Override
     public boolean add(Pet pet) throws SQLException {
-        Integer availableId = getFirstAvailableId();
-        String sql;
-        if (availableId != null) {
-            sql = "INSERT INTO pets (id, name, species, breed, age, medical_history, owner_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
-            try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(1, availableId);
-                stmt.setString(2, pet.getName());
-                stmt.setString(3, pet.getSpecies());
-                stmt.setString(4, pet.getBreed());
-                stmt.setInt(5, pet.getAge());
-                stmt.setString(6, pet.getMedicalHistory());
-                if (pet.getOwnerId() != null) {
-                    stmt.setInt(7, pet.getOwnerId());
-                }
-                else {
-                    stmt.setNull(7, Types.INTEGER);
-                }
-                int rowsAffected = stmt.executeUpdate();
-                if (rowsAffected > 0) {
-                    pet.setId(availableId);
-                    return true;
-                }
+        String sql = "INSERT INTO pets (name, species, breed, age, medical_history, owner_id) VALUES (?, ?, ?, ?, ?, ?)";
+        try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, pet.getName());
+            stmt.setString(2, pet.getSpecies());
+            stmt.setString(3, pet.getBreed());
+            stmt.setInt(4, pet.getAge());
+            stmt.setString(5, pet.getMedicalHistory());
+            if (pet.getOwnerId() != null) {
+                stmt.setInt(6, pet.getOwnerId());
             }
-        }
-        else {
-            sql = "INSERT INTO pets (name, species, breed, age, medical_history, owner_id) VALUES (?, ?, ?, ?, ?, ?)";
-            try (Connection conn = DatabaseConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-                stmt.setString(1, pet.getName());
-                stmt.setString(2, pet.getSpecies());
-                stmt.setString(3, pet.getBreed());
-                stmt.setInt(4, pet.getAge());
-                stmt.setString(5, pet.getMedicalHistory());
-                if (pet.getOwnerId() != null) {
-                    stmt.setInt(6, pet.getOwnerId());
-                }
-                else {
-                    stmt.setNull(6, Types.INTEGER);
-                }
-                int rowsAffected = stmt.executeUpdate();
-                if (rowsAffected > 0) {
-                    try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
-                        if (generatedKeys.next()) {
-                            pet.setId(generatedKeys.getInt(1));
-                        }
+            else {
+                stmt.setNull(6, Types.INTEGER);
+            }
+            int rowsAffected = stmt.executeUpdate();
+            if (rowsAffected > 0) {
+                try (ResultSet generatedKeys = stmt.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        pet.setId(generatedKeys.getInt(1));
                     }
-                    return true;
                 }
+                return true;
             }
         }
         return false;

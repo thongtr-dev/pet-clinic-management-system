@@ -4,7 +4,7 @@ import com.petclinic.model.User;
 import javax.swing.*;
 import java.awt.*;
 
-public class UserView extends JPanel implements NavigableView {
+public class UserView extends JPanel {
     private JTextField usernameField;
     private JPasswordField passwordField;
     private JButton loginButton;
@@ -136,10 +136,4 @@ public class UserView extends JPanel implements NavigableView {
     public JButton getLogoutButton() { return logoutButton; }
 
     public JButton getPetButton() { return petButton; }
-
-    @Override
-    public void showView() { this.setVisible(true); }
-
-    @Override
-    public void hideView() { this.setVisible(false); }
 }
