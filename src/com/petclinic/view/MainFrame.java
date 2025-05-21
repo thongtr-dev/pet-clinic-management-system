@@ -1,7 +1,7 @@
 package com.petclinic.view;
 
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 public class MainFrame extends JFrame {
     private final CardLayout cardLayout;

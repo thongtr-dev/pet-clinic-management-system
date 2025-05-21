@@ -1,22 +1,20 @@
 package com.petclinic.view;
 
-import com.petclinic.model.Pet;
+import com.petclinic.model.Owner;
 import java.awt.*;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 
-public class PetView extends JPanel {
+public class OwnerView extends JPanel {
     private JPanel mainPanel;
-    private JTable petTable;
+    private JTable ownerTable;
     private DefaultTableModel tableModel;
     private JTextField idField;
-    private JTextField nameField;
-    private JTextField speciesField;
-    private JTextField breedField;
-    private JTextField ageField;
-    private JTextArea medicalHistoryArea;
-    private JTextField ownerIdField;
+    private JTextField fullNameField;
+    private JTextField emailField;
+    private JTextField phoneField;
+    private JTextField addressField;
     private JButton addButton;
     private JButton updateButton;
     private JButton deleteButton;
@@ -30,7 +28,7 @@ public class PetView extends JPanel {
     private boolean isAddMode;
     private JLabel idLabel;
 
-    public PetView() {
+    public OwnerView() {
         initializeMainPanel();
         initializeFormDialog();
         setLayout(new BorderLayout());
@@ -42,22 +40,25 @@ public class PetView extends JPanel {
     private void initializeMainPanel() {
         mainPanel = new JPanel(new BorderLayout());
         JPanel headerPanel = new JPanel(new BorderLayout());
-        welcomeLabel = new JLabel("QUẢN LÝ HỒ SƠ THÚ CƯNG");
+        welcomeLabel = new JLabel("QUẢN LÝ HỒ SƠ CHỦ NUÔI");
         welcomeLabel.setFont(new Font("Arial", Font.BOLD, 18));
         welcomeLabel.setHorizontalAlignment(JLabel.LEFT);
         headerPanel.add(welcomeLabel, BorderLayout.CENTER);
         backButton = new JButton("QUAY LẠI");
         headerPanel.add(backButton, BorderLayout.EAST);
         mainPanel.add(headerPanel, BorderLayout.NORTH);
-        String[] columnNames = {"ID", "TÊN", "LOÀI", "GIỐNG", "TUỔI", "TIỀN SỬ BỆNH", "CHỦ NUÔI"};
+           String[] columnNames = {"ID", "TÊN", "EMAIL", "SỐ ĐIỆN THOẠI", "ĐỊA CHỈ"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) { return false; }
         };
-        petTable = new JTable(tableModel);
-        petTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        JScrollPane tableScrollPane = new JScrollPane(petTable);
+        
+        ownerTable = new JTable(tableModel);
+        ownerTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        JScrollPane tableScrollPane = new JScrollPane(ownerTable);
         mainPanel.add(tableScrollPane, BorderLayout.CENTER);
+        
+        // Button panel
         JPanel buttonPanel = new JPanel(new FlowLayout());
         addButton = new JButton("THÊM MỚI");
         updateButton = new JButton("CẬP NHẬT");
@@ -72,15 +73,17 @@ public class PetView extends JPanel {
 
     private void initializeFormDialog() {
         formDialog = new JDialog();
-        formDialog.setTitle("Thông tin thú cưng");
+        formDialog.setTitle("Thông tin chủ nuôi");
         formDialog.setModal(true);
         formDialog.setSize(500, 400);
         formDialog.setLocationRelativeTo(this);
         formPanel = new JPanel(new BorderLayout());
         JPanel inputPanel = new JPanel(new GridBagLayout());
+        formPanel.add(inputPanel, BorderLayout.CENTER); 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
+        
         gbc.gridx = 0;
         gbc.gridy = 0;
         idLabel = new JLabel("ID:");
@@ -89,45 +92,35 @@ public class PetView extends JPanel {
         idField = new JTextField(10);
         idField.setEditable(false);
         inputPanel.add(idField, gbc);
+        
         gbc.gridx = 0;
         gbc.gridy = 1;
-        inputPanel.add(new JLabel("TÊN:"), gbc);
+        inputPanel.add(new JLabel("HỌ VÀ TÊN:"), gbc);
         gbc.gridx = 1;
-        nameField = new JTextField(20);
-        inputPanel.add(nameField, gbc);
+        fullNameField = new JTextField(20);
+        inputPanel.add(fullNameField, gbc);
+        
         gbc.gridx = 0;
         gbc.gridy = 2;
-        inputPanel.add(new JLabel("LOÀI:"), gbc);
+        inputPanel.add(new JLabel("EMAIL:"), gbc);
         gbc.gridx = 1;
-        speciesField = new JTextField(20);
-        inputPanel.add(speciesField, gbc);
+        emailField = new JTextField(20);
+        inputPanel.add(emailField, gbc);
+
         gbc.gridx = 0;
         gbc.gridy = 3;
-        inputPanel.add(new JLabel("GIỐNG:"), gbc);
+        inputPanel.add(new JLabel("SỐ ĐIỆN THOẠI:"), gbc);
         gbc.gridx = 1;
-        breedField = new JTextField(20);
-        inputPanel.add(breedField, gbc);
+        phoneField = new JTextField(20);
+        inputPanel.add(phoneField, gbc);
+
         gbc.gridx = 0;
         gbc.gridy = 4;
-        inputPanel.add(new JLabel("TUỔI:"), gbc);
+        inputPanel.add(new JLabel("ĐỊA CHỈ:"), gbc);
         gbc.gridx = 1;
-        ageField = new JTextField(5);
-        inputPanel.add(ageField, gbc);
-        gbc.gridx = 0;
-        gbc.gridy = 5;
-        inputPanel.add(new JLabel("TIỀN SỬ BỆNH:"), gbc);
-        gbc.gridx = 1;
-        medicalHistoryArea = new JTextArea(4, 20);
-        medicalHistoryArea.setLineWrap(true);
-        JScrollPane medicalScrollPane = new JScrollPane(medicalHistoryArea);
-        inputPanel.add(medicalScrollPane, gbc);
-        gbc.gridx = 0;
-        gbc.gridy = 6;
-        inputPanel.add(new JLabel("CHỦ NUÔI:"), gbc);
-        gbc.gridx = 1;
-        ownerIdField = new JTextField(10);
-        inputPanel.add(ownerIdField, gbc);
-        formPanel.add(inputPanel, BorderLayout.CENTER);
+        addressField = new JTextField(20);
+        inputPanel.add(addressField, gbc);
+        
         JPanel formButtonPanel = new JPanel(new FlowLayout());
         confirmButton = new JButton();
         cancelButton = new JButton("HỦY");
@@ -137,10 +130,16 @@ public class PetView extends JPanel {
         formDialog.setContentPane(formPanel);
     }
 
-    public void showPets(List<Pet> pets) {
+    public void showOwners(List<Owner> owners) {
         tableModel.setRowCount(0);
-        for (Pet pet : pets) {
-            tableModel.addRow(new Object[]{pet.getId(), pet.getName(), pet.getSpecies(), pet.getBreed(), pet.getAge(), pet.getMedicalHistory(), pet.getOwnerDisplay()});
+        for (Owner owner : owners) {
+            tableModel.addRow(new Object[]{
+                owner.getId(),
+                owner.getFullName(),
+                owner.getEmail(),
+                owner.getPhone(),
+                owner.getAddress()
+            });
         }
     }
 
@@ -148,7 +147,7 @@ public class PetView extends JPanel {
         clearFields();
         isAddMode = true;
         confirmButton.setText("THÊM MỚI");
-        formDialog.setTitle("THÊM MỚI HỒ SƠ THÚ CƯNG");
+        formDialog.setTitle("THÊM MỚI HỒ SƠ CHỦ NUÔI");
         idField.setVisible(false);
         idLabel.setVisible(false);
         formDialog.pack();
@@ -156,11 +155,11 @@ public class PetView extends JPanel {
         formDialog.setVisible(true);
     }
 
-    public void showUpdateForm(Pet pet) {
-        setPetFields(pet);
+    public void showUpdateForm(Owner owner) {
+        setOwnerFields(owner);
         isAddMode = false;
         confirmButton.setText("CẬP NHẬT");
-        formDialog.setTitle("CẬP NHẬT HỒ SƠ THÚ CƯNG");
+        formDialog.setTitle("CẬP NHẬT HỒ SƠ CHỦ NUÔI");
         idField.setVisible(true);
         idLabel.setVisible(true);
         formDialog.pack();
@@ -172,64 +171,43 @@ public class PetView extends JPanel {
 
     public void clearFields() {
         idField.setText("");
-        nameField.setText("");
-        speciesField.setText("");
-        breedField.setText("");
-        ageField.setText("");
-        medicalHistoryArea.setText("");
-        ownerIdField.setText("");
+        fullNameField.setText("");
+        emailField.setText("");
+        phoneField.setText("");
+        addressField.setText("");
     }
 
-    public void setPetFields(Pet pet) {
-        idField.setText(String.valueOf(pet.getId()));
-        nameField.setText(pet.getName());
-        speciesField.setText(pet.getSpecies());
-        breedField.setText(pet.getBreed());
-        ageField.setText(String.valueOf(pet.getAge()));
-        medicalHistoryArea.setText(pet.getMedicalHistory());
-        if (pet.getOwnerId() != null) {
-            ownerIdField.setText(String.valueOf(pet.getOwnerId()));
-        }
-        else {
-            ownerIdField.setText("");
-        }
+    public void setOwnerFields(Owner owner) {
+        idField.setText(String.valueOf(owner.getId()));
+        fullNameField.setText(owner.getFullName());
+        emailField.setText(owner.getEmail());
+        phoneField.setText(owner.getPhone());
+        addressField.setText(owner.getAddress());
     }
 
-    public Pet getPetFields() {
-        Pet pet = new Pet();
+    public Owner getOwnerFields() {
+        Owner owner = new Owner();
         if (!idField.getText().isEmpty()) {
-            pet.setId(Integer.parseInt(idField.getText()));
+            owner.setId(Integer.parseInt(idField.getText()));
         }
-        pet.setName(nameField.getText());
-        pet.setSpecies(speciesField.getText());
-        pet.setBreed(breedField.getText());
-        try {
-            pet.setAge(Integer.parseInt(ageField.getText()));
-        }
-        catch (NumberFormatException e) {
-            pet.setAge(0);
-        }
-        pet.setMedicalHistory(medicalHistoryArea.getText());
-        if (!ownerIdField.getText().isEmpty()) {
-            try {
-                pet.setOwnerId(Integer.parseInt(ownerIdField.getText()));
-            }
-            catch (NumberFormatException e) {}
-        }
-        return pet;
+        owner.setFullName(fullNameField.getText());
+        owner.setEmail(emailField.getText());
+        owner.setPhone(phoneField.getText());
+        owner.setAddress(addressField.getText());
+        return owner;
     }
 
-    public int getSelectedPet() {
-        int selectedRow = petTable.getSelectedRow();
+    public int getSelectedOwner() {
+        int selectedRow = ownerTable.getSelectedRow();
         if (selectedRow != -1) {
-            return (int) petTable.getValueAt(selectedRow, 0);
+            return (int) ownerTable.getValueAt(selectedRow, 0);
         }
         return -1;
     }
 
     public void showMessage(String message) { JOptionPane.showMessageDialog(this, message); }
     
-    public JTable getPetTable() { return petTable; }
+    public JTable getOwnerTable() { return ownerTable; }
     
     public boolean isAddMode() { return isAddMode; }
 

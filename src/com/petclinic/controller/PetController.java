@@ -7,8 +7,6 @@ import com.petclinic.view.PetView;
 import java.sql.SQLException;
 import java.util.List;
 import javax.swing.JOptionPane;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 
 public class PetController {
     private final PetView petView;
