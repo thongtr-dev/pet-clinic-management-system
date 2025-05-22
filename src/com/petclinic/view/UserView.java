@@ -1,8 +1,7 @@
 package com.petclinic.view;
 
-import com.petclinic.model.User;
-import javax.swing.*;
 import java.awt.*;
+import javax.swing.*;
 
 public class UserView extends JPanel {
     private JTextField usernameField;
@@ -16,6 +15,7 @@ public class UserView extends JPanel {
     private JLabel welcomeLabel;
     private boolean isLoginMode = true;
     private JButton petButton;
+    private JButton ownerButton;
 
     public UserView() {
         initializeAuthenticationPanel();
@@ -79,7 +79,7 @@ public class UserView extends JPanel {
         JPanel functionsPanel = new JPanel(new GridLayout(2, 2, 10, 10));
         functionsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         petButton = new JButton("QUẢN LÝ HỒ SƠ THÚ CƯNG");
-        JButton ownerButton = new JButton("QUẢN LÝ HỒ SƠ CHỦ NUÔI");
+        ownerButton = new JButton("QUẢN LÝ HỒ SƠ CHỦ NUÔI");
         JButton appointmentButton = new JButton("QUẢN LÝ LỊCH HẸN");
         JButton medicalButton = new JButton("QUẢN LÝ HỒ SƠ Y TẾ");
         functionsPanel.add(petButton);
@@ -136,4 +136,6 @@ public class UserView extends JPanel {
     public JButton getLogoutButton() { return logoutButton; }
 
     public JButton getPetButton() { return petButton; }
+
+    public JButton getOwnerButton() { return ownerButton; }
 }

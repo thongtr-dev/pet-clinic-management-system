@@ -25,6 +25,7 @@ public class UserController {
         userView.getRegisterButton().addActionListener(e -> handleRegister());
         userView.getLogoutButton().addActionListener(e -> handleLogout());
         userView.getPetButton().addActionListener(e -> showPetView());
+        userView.getOwnerButton().addActionListener(e -> showOwnerView());
     }
     
     private void handleLogin() {
@@ -92,6 +93,12 @@ public class UserController {
     private void showPetView() {
         if (navigationController != null) {
             navigationController.navigateTo("PET_VIEW");
+        }
+    }
+
+        private void showOwnerView() {
+        if (navigationController != null) {
+            navigationController.navigateTo("OWNER_VIEW");
         }
     }
 }
