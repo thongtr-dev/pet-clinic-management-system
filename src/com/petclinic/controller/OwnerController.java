@@ -77,7 +77,7 @@ public class OwnerController {
 
     private void handleUpdateAction() {
         if (!sessionManager.isLoggedIn()) {
-            JOptionPane.showMessageDialog(ownerView, "Phiên đăng nhập đã hết hạn!");
+            JOptionPane.showMessageDialog(ownerView, "Hãy đăng nhập tài khoản trước!");
             navigationController.navigateTo("USER_VIEW");
             return;
         }
@@ -118,7 +118,8 @@ public class OwnerController {
 
     private void handleDelete() {
         if (!sessionManager.isLoggedIn()) {
-            JOptionPane.showMessageDialog(ownerView, "Không được phép xóa hồ sơ chủ nuôi!");
+            JOptionPane.showMessageDialog(ownerView, "Hãy đăng nhập tài khoản trước!");
+            navigationController.navigateTo("USER_VIEW");
             return;
         }
         int ownerId = ownerView.getSelectedOwner();
