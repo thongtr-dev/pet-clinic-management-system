@@ -27,6 +27,15 @@ public class PetClinic {
             final PetDAO petDAO = new PetDAOImpl();
             final OwnerView ownerView = new OwnerView();
             final OwnerDAO ownerDAO = new OwnerDAOImpl();
+
+            ownerView.setPetViewCallback(new OwnerView.PetViewCallback() {
+                @Override
+                public void openPetAddForm(int ownerId) {
+                    navigationController.navigateTo("PET_VIEW");
+                    petView.showAddForm(ownerId);
+                }
+            });
+
             new UserController(userView, userDAO, navigationController);
             new PetController(petView, petDAO, navigationController);
             new OwnerController(ownerView, ownerDAO, navigationController);

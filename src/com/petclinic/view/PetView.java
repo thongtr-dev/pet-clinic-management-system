@@ -64,6 +64,7 @@ public class PetView extends JPanel {
         deleteButton = new JButton("XÓA BỎ");
         refreshButton = new JButton("LÀM MỚI");
         buttonPanel.add(addButton);
+        addButton.setVisible(false);
         buttonPanel.add(updateButton);
         buttonPanel.add(deleteButton);
         buttonPanel.add(refreshButton);
@@ -156,6 +157,20 @@ public class PetView extends JPanel {
         formDialog.setVisible(true);
     }
 
+    public void showAddForm(int ownerId) {
+        clearFields();
+        isAddMode = true;
+        confirmButton.setText("THÊM MỚI");
+        formDialog.setTitle("THÊM MỚI HỒ SƠ THÚ CƯNG");
+        idField.setVisible(false);
+        idLabel.setVisible(false);
+        ownerIdField.setText(String.valueOf(ownerId));
+        ownerIdField.setEditable(false);
+        formDialog.pack();
+        formDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
+        formDialog.setVisible(true);
+    }
+
     public void showUpdateForm(Pet pet) {
         setPetFields(pet);
         isAddMode = false;
@@ -193,6 +208,10 @@ public class PetView extends JPanel {
         else {
             ownerIdField.setText("");
         }
+    }
+    public void setOwnerId(int ownerId, boolean editable) {
+        ownerIdField.setText(String.valueOf(ownerId));
+        ownerIdField.setEditable(editable);
     }
 
     public Pet getPetFields() {
@@ -246,4 +265,8 @@ public class PetView extends JPanel {
     public JButton getCancelButton() { return cancelButton; }
 
     public JButton getConfirmButton() { return confirmButton; }
+
+    public JTextField getOwnerIdField() {
+    return ownerIdField;
+}
 }
