@@ -77,7 +77,7 @@ public class PetController {
 
     private void handleUpdateAction() {
         if (!sessionManager.isLoggedIn()) {
-            JOptionPane.showMessageDialog(petView, "Phiên đăng nhập đã hết hạn!");
+            JOptionPane.showMessageDialog(petView, "Hãy đăng nhập tài khoản trước!");
             navigationController.navigateTo("USER_VIEW");
             return;
         }
@@ -118,7 +118,8 @@ public class PetController {
 
     private void handleDelete() {
         if (!sessionManager.isLoggedIn()) {
-            JOptionPane.showMessageDialog(petView, "Không được phép xóa hồ sơ thú cưng!");
+            JOptionPane.showMessageDialog(petView, "Hãy đăng nhập tài khoản trước!");
+            navigationController.navigateTo("USER_VIEW");
             return;
         }
         int petId = petView.getSelectedPet();
