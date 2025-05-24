@@ -4,6 +4,7 @@ import com.petclinic.dao.PetDAO;
 import com.petclinic.model.Pet;
 import com.petclinic.util.SessionManager;
 import com.petclinic.view.PetView;
+
 import java.sql.SQLException;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -64,12 +65,10 @@ public class PetController {
                     petView.showMessage("Thêm hồ sơ thú cưng thành công!");
                     petView.hideForm();
                     refreshPetsTable();
-                }
-                else {
+                } else {
                     petView.showMessage("Thêm hồ sơ thú cưng thất bại!");
                 }
-            }
-            catch (SQLException ex) {
+            } catch (SQLException ex) {
                 petView.showMessage("Database error: " + ex.getMessage());
             }
         }
@@ -90,8 +89,7 @@ public class PetController {
             if (pet != null) {
                 petView.showUpdateForm(pet);
             }
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             petView.showMessage("Database error: " + ex.getMessage());
         }
     }
@@ -105,12 +103,10 @@ public class PetController {
                     petView.showMessage("Cập nhật hồ sơ thú cưng thành công!");
                     petView.hideForm();
                     refreshPetsTable();
-                }
-                else {
+                } else {
                     petView.showMessage("Cập nhật hồ sơ thú cưng thất bại!");
                 }
-            }
-            catch (SQLException ex) {
+            } catch (SQLException ex) {
                 petView.showMessage("Database error: " + ex.getMessage());
             }
         }
@@ -134,12 +130,10 @@ public class PetController {
                 if (success) {
                     petView.showMessage("Xóa hồ sơ thú cưng thành công!");
                     refreshPetsTable();
-                }
-                else {
+                } else {
                     petView.showMessage("Xóa hồ sơ thú cưng thất bại!");
                 }
-            }
-            catch (SQLException ex) {
+            } catch (SQLException ex) {
                 petView.showMessage("Database error: " + ex.getMessage());
             }
         }
@@ -151,8 +145,7 @@ public class PetController {
             petView.showPets(pets);
             petView.getUpdateButton().setEnabled(false);
             petView.getDeleteButton().setEnabled(false);
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             petView.showMessage("Database error: " + ex.getMessage());
         }
     }
@@ -160,8 +153,7 @@ public class PetController {
     private void handleFormSubmit() {
         if (petView.isAddMode()) {
             handleAdd();
-        }
-        else {
+        } else {
             handleUpdate();
         }
     }

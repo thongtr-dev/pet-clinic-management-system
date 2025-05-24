@@ -7,7 +7,8 @@ public class Owner {
     private String phone;
     private String address;
 
-    public Owner() {}
+    public Owner() {
+    }
 
     public Owner(String fullName, String email, String phone, String address) {
         this.fullName = fullName;
@@ -25,44 +26,44 @@ public class Owner {
     }
 
     // Getter và Setter
-    public int getId() { 
-        return id; 
+    public int getId() {
+        return id;
     }
 
-    public void setId(int id) { 
-        this.id = id; 
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public String getFullName() { 
-        return fullName; 
+    public String getFullName() {
+        return fullName;
     }
 
-    public void setFullName(String fullName) { 
-        this.fullName = fullName; 
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
-    public String getEmail() { 
-        return email; 
+    public String getEmail() {
+        return email;
     }
 
-    public void setEmail(String email) { 
-        this.email = email; 
+    public void setEmail(String email) {
+        this.email = email;
     }
 
-    public String getPhone() { 
-        return phone; 
+    public String getPhone() {
+        return phone;
     }
 
-    public void setPhone(String phone) { 
-        this.phone = phone; 
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
-    public String getAddress() { 
-        return address; 
+    public String getAddress() {
+        return address;
     }
 
-    public void setAddress(String address) { 
-        this.address = address; 
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getDisplayInfo() {

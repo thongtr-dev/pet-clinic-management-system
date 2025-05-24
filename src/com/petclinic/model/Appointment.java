@@ -11,7 +11,8 @@ public class Appointment {
     private String petName;
     private String ownerName;
 
-    public Appointment() {}
+    public Appointment() {
+    }
 
     public Appointment(int petId, String vetName, LocalDateTime appointmentDate, String notes) {
         this.petId = petId;

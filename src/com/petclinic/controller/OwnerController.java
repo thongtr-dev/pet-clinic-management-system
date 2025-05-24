@@ -4,6 +4,7 @@ import com.petclinic.dao.OwnerDAO;
 import com.petclinic.model.Owner;
 import com.petclinic.util.SessionManager;
 import com.petclinic.view.OwnerView;
+
 import java.sql.SQLException;
 import java.util.List;
 import javax.swing.JOptionPane;
@@ -64,12 +65,10 @@ public class OwnerController {
                     ownerView.showMessage("Thêm hồ sơ chủ nuôi thành công!");
                     ownerView.hideForm();
                     refreshOwnersTable();
-                }
-                else {
+                } else {
                     ownerView.showMessage("Thêm hồ sơ chủ nuôi thất bại!");
                 }
-            }
-            catch (SQLException ex) {
+            } catch (SQLException ex) {
                 ownerView.showMessage("Database error: " + ex.getMessage());
             }
         }
@@ -90,8 +89,7 @@ public class OwnerController {
             if (owner != null) {
                 ownerView.showUpdateForm(owner);
             }
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             ownerView.showMessage("Database error: " + ex.getMessage());
         }
     }
@@ -105,12 +103,10 @@ public class OwnerController {
                     ownerView.showMessage("Cập nhật hồ sơ chủ nuôi thành công!");
                     ownerView.hideForm();
                     refreshOwnersTable();
-                }
-                else {
+                } else {
                     ownerView.showMessage("Cập nhật hồ sơ chủ nuôi thất bại!");
                 }
-            }
-            catch (SQLException ex) {
+            } catch (SQLException ex) {
                 ownerView.showMessage("Database error: " + ex.getMessage());
             }
         }
@@ -134,12 +130,10 @@ public class OwnerController {
                 if (success) {
                     ownerView.showMessage("Xóa hồ sơ chủ nuôi thành công!");
                     refreshOwnersTable();
-                }
-                else {
+                } else {
                     ownerView.showMessage("Xóa hồ sơ chủ nuôi thất bại!");
                 }
-            }
-            catch (SQLException ex) {
+            } catch (SQLException ex) {
                 ownerView.showMessage("Database error: " + ex.getMessage());
             }
         }
@@ -151,8 +145,7 @@ public class OwnerController {
             ownerView.showOwners(owners);
             ownerView.getUpdateButton().setEnabled(false);
             ownerView.getDeleteButton().setEnabled(false);
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             ownerView.showMessage("Database error: " + ex.getMessage());
         }
     }
@@ -160,11 +153,11 @@ public class OwnerController {
     private void handleFormSubmit() {
         if (ownerView.isAddMode()) {
             handleAdd();
-        }
-        else {
+        } else {
             handleUpdate();
         }
     }
+
     private boolean validate(Owner owner) {
         if (owner.getFullName().trim().isEmpty()) {
             ownerView.showMessage("Hãy nhập Họ và tên chủ nuôi!");

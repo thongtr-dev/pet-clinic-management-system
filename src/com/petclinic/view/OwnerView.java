@@ -2,6 +2,7 @@ package com.petclinic.view;
 
 import com.petclinic.controller.NavigationController;
 import com.petclinic.model.Owner;
+
 import java.awt.*;
 import java.util.List;
 import javax.swing.*;
@@ -49,21 +50,21 @@ public class OwnerView extends JPanel {
         backButton = new JButton("QUAY LẠI");
         headerPanel.add(backButton, BorderLayout.EAST);
         mainPanel.add(headerPanel, BorderLayout.NORTH);
-           String[] columnNames = {"ID", "TÊN", "EMAIL", "SỐ ĐIỆN THOẠI", "ĐỊA CHỈ", "THÊM THÚ CƯNG"};
+        String[] columnNames = {"ID", "TÊN", "EMAIL", "SỐ ĐIỆN THOẠI", "ĐỊA CHỈ", "THÊM THÚ CƯNG"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
-            public boolean isCellEditable(int row, int column) { 
-                return column == 5; 
+            public boolean isCellEditable(int row, int column) {
+                return column == 5;
             }
         };
-        
+
         ownerTable = new JTable(tableModel);
-        ownerTable.getColumnModel().getColumn(5).setCellRenderer(new ButtonRenderer()); 
+        ownerTable.getColumnModel().getColumn(5).setCellRenderer(new ButtonRenderer());
         ownerTable.getColumnModel().getColumn(5).setCellEditor(new ButtonEditor(new JCheckBox()));
         ownerTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane tableScrollPane = new JScrollPane(ownerTable);
         mainPanel.add(tableScrollPane, BorderLayout.CENTER);
-        
+
         // Button panel
         JPanel buttonPanel = new JPanel(new FlowLayout());
         addButton = new JButton("THÊM MỚI");
@@ -85,11 +86,11 @@ public class OwnerView extends JPanel {
         formDialog.setLocationRelativeTo(this);
         formPanel = new JPanel(new BorderLayout());
         JPanel inputPanel = new JPanel(new GridBagLayout());
-        formPanel.add(inputPanel, BorderLayout.CENTER); 
+        formPanel.add(inputPanel, BorderLayout.CENTER);
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(5, 5, 5, 5);
-        
+
         gbc.gridx = 0;
         gbc.gridy = 0;
         idLabel = new JLabel("ID:");
@@ -98,14 +99,14 @@ public class OwnerView extends JPanel {
         idField = new JTextField(10);
         idField.setEditable(false);
         inputPanel.add(idField, gbc);
-        
+
         gbc.gridx = 0;
         gbc.gridy = 1;
         inputPanel.add(new JLabel("HỌ VÀ TÊN:"), gbc);
         gbc.gridx = 1;
         fullNameField = new JTextField(20);
         inputPanel.add(fullNameField, gbc);
-        
+
         gbc.gridx = 0;
         gbc.gridy = 2;
         inputPanel.add(new JLabel("EMAIL:"), gbc);
@@ -126,7 +127,7 @@ public class OwnerView extends JPanel {
         gbc.gridx = 1;
         addressField = new JTextField(20);
         inputPanel.add(addressField, gbc);
-        
+
         JPanel formButtonPanel = new JPanel(new FlowLayout());
         confirmButton = new JButton();
         cancelButton = new JButton("HỦY");
@@ -136,7 +137,7 @@ public class OwnerView extends JPanel {
         formDialog.setContentPane(formPanel);
     }
 
-        class ButtonRenderer extends JButton implements TableCellRenderer {
+    class ButtonRenderer extends JButton implements TableCellRenderer {
         public ButtonRenderer() {
             setOpaque(true);
             setText("Chọn");
@@ -144,7 +145,7 @@ public class OwnerView extends JPanel {
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus, int row, int column) {
+                                                       boolean isSelected, boolean hasFocus, int row, int column) {
             return this;
         }
     }
@@ -168,21 +169,21 @@ public class OwnerView extends JPanel {
 
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value,
-                boolean isSelected, int row, int column) {
+                                                     boolean isSelected, int row, int column) {
             selectedRow = row;
             return button;
         }
     }
-    
+
     public void showOwners(List<Owner> owners) {
         tableModel.setRowCount(0);
         for (Owner owner : owners) {
             tableModel.addRow(new Object[]{
-                owner.getId(),
-                owner.getFullName(),
-                owner.getEmail(),
-                owner.getPhone(),
-                owner.getAddress()
+                    owner.getId(),
+                    owner.getFullName(),
+                    owner.getEmail(),
+                    owner.getPhone(),
+                    owner.getAddress()
             });
         }
     }
@@ -211,7 +212,9 @@ public class OwnerView extends JPanel {
         formDialog.setVisible(true);
     }
 
-    public void hideForm() { formDialog.setVisible(false); }
+    public void hideForm() {
+        formDialog.setVisible(false);
+    }
 
     public void clearFields() {
         idField.setText("");
@@ -249,25 +252,45 @@ public class OwnerView extends JPanel {
         return -1;
     }
 
-    public void showMessage(String message) { JOptionPane.showMessageDialog(this, message); }
-    
-    public JTable getOwnerTable() { return ownerTable; }
-    
-    public boolean isAddMode() { return isAddMode; }
+    public void showMessage(String message) {
+        JOptionPane.showMessageDialog(this, message);
+    }
 
-    public JButton getAddButton() { return addButton; }
+    public JTable getOwnerTable() {
+        return ownerTable;
+    }
 
-    public JButton getUpdateButton() { return updateButton; }
+    public boolean isAddMode() {
+        return isAddMode;
+    }
 
-    public JButton getDeleteButton() { return deleteButton; }
+    public JButton getAddButton() {
+        return addButton;
+    }
 
-    public JButton getRefreshButton() { return refreshButton; }
+    public JButton getUpdateButton() {
+        return updateButton;
+    }
 
-    public JButton getBackButton() { return backButton; }
+    public JButton getDeleteButton() {
+        return deleteButton;
+    }
 
-    public JButton getCancelButton() { return cancelButton; }
+    public JButton getRefreshButton() {
+        return refreshButton;
+    }
 
-    public JButton getConfirmButton() { return confirmButton; }
+    public JButton getBackButton() {
+        return backButton;
+    }
+
+    public JButton getCancelButton() {
+        return cancelButton;
+    }
+
+    public JButton getConfirmButton() {
+        return confirmButton;
+    }
 
     private PetViewCallback petViewCallback;
 

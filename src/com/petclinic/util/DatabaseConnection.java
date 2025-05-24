@@ -19,8 +19,7 @@ public class DatabaseConnection {
                 String user = props.getProperty("db.user");
                 String password = props.getProperty("db.password");
                 connection = DriverManager.getConnection(url, user, password);
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 throw new SQLException("Error loading database config", e);
             }
         }

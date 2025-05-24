@@ -2,6 +2,7 @@ package com.petclinic.dao;
 
 import com.petclinic.model.Pet;
 import com.petclinic.util.DatabaseConnection;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -23,8 +24,7 @@ public class PetDAOImpl implements PetDAO {
             stmt.setString(5, pet.getMedicalHistory());
             if (pet.getOwnerId() != null) {
                 stmt.setInt(6, pet.getOwnerId());
-            }
-            else {
+            } else {
                 stmt.setNull(6, Types.INTEGER);
             }
             int rowsAffected = stmt.executeUpdate();
@@ -51,8 +51,7 @@ public class PetDAOImpl implements PetDAO {
             stmt.setString(5, pet.getMedicalHistory());
             if (pet.getOwnerId() != null) {
                 stmt.setInt(6, pet.getOwnerId());
-            }
-            else {
+            } else {
                 stmt.setNull(6, Types.INTEGER);
             }
             stmt.setInt(7, pet.getId());
@@ -117,6 +116,99 @@ public class PetDAOImpl implements PetDAO {
                     pet.setOwnerName(rs.getString("full_name"));
                 }
                 pets.add(pet);
+            }
+        }
+        return pets;
+    }
+
+    @Override
+    public List<Pet> searchByName(String name) throws SQLException {
+        List<Pet> pets = new ArrayList<>();
+        String sql = "SELECT p.*, o.full_name FROM pets p LEFT JOIN owners o ON p.owner_id = o.id " +
+                "WHERE LOWER(p.name) LIKE LOWER(?) ORDER BY p.name";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, "%" + name + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Pet pet = new Pet();
+                    pet.setId(rs.getInt("id"));
+                    pet.setName(rs.getString("name"));
+                    pet.setSpecies(rs.getString("species"));
+                    pet.setBreed(rs.getString("breed"));
+                    pet.setAge(rs.getInt("age"));
+                    pet.setMedicalHistory(rs.getString("medical_history"));
+                    int ownerId = rs.getInt("owner_id");
+                    if (!rs.wasNull()) {
+                        pet.setOwnerId(ownerId);
+                        pet.setOwnerName(rs.getString("full_name"));
+                    }
+                    pets.add(pet);
+                }
+            }
+        }
+        return pets;
+    }
+
+    @Override
+    public List<Pet> searchByOwnerName(String ownerName) throws SQLException {
+        List<Pet> pets = new ArrayList<>();
+        String sql = "SELECT p.*, o.full_name FROM pets p LEFT JOIN owners o ON p.owner_id = o.id " +
+                "WHERE LOWER(o.full_name) LIKE LOWER(?) ORDER BY o.full_name, p.name";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, "%" + ownerName + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Pet pet = new Pet();
+                    pet.setId(rs.getInt("id"));
+                    pet.setName(rs.getString("name"));
+                    pet.setSpecies(rs.getString("species"));
+                    pet.setBreed(rs.getString("breed"));
+                    pet.setAge(rs.getInt("age"));
+                    pet.setMedicalHistory(rs.getString("medical_history"));
+                    int ownerId = rs.getInt("owner_id");
+                    if (!rs.wasNull()) {
+                        pet.setOwnerId(ownerId);
+                        pet.setOwnerName(rs.getString("full_name"));
+                    }
+                    pets.add(pet);
+                }
+            }
+        }
+        return pets;
+    }
+
+    @Override
+    public List<Pet> searchBySpecies(String species) throws SQLException {
+        List<Pet> pets = new ArrayList<>();
+        String sql = "SELECT p.*, o.full_name FROM pets p LEFT JOIN owners o ON p.owner_id = o.id " +
+                "WHERE LOWER(p.species) LIKE LOWER(?) ORDER BY p.species, p.name";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, "%" + species + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Pet pet = new Pet();
+                    pet.setId(rs.getInt("id"));
+                    pet.setName(rs.getString("name"));
+                    pet.setSpecies(rs.getString("species"));
+                    pet.setBreed(rs.getString("breed"));
+                    pet.setAge(rs.getInt("age"));
+                    pet.setMedicalHistory(rs.getString("medical_history"));
+                    int ownerId = rs.getInt("owner_id");
+                    if (!rs.wasNull()) {
+                        pet.setOwnerId(ownerId);
+                        pet.setOwnerName(rs.getString("full_name"));
+                    }
+                    pets.add(pet);
+                }
             }
         }
         return pets;

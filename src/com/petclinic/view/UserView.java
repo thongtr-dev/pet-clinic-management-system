@@ -17,6 +17,8 @@ public class UserView extends JPanel {
     private JButton petButton;
     private JButton ownerButton;
     private JButton appointmentButton;
+    private JButton medicalRecordButton;
+    private JButton searchButton;
 
     public UserView() {
         initializeAuthenticationPanel();
@@ -77,19 +79,21 @@ public class UserView extends JPanel {
         logoutButton = new JButton("ĐĂNG XUẤT");
         headerPanel.add(logoutButton, BorderLayout.EAST);
         dashboardPanel.add(headerPanel, BorderLayout.NORTH);
-        JPanel functionsPanel = new JPanel(new GridLayout(2, 2, 10, 10));
+        JPanel functionsPanel = new JPanel(new GridLayout(3, 2, 10, 10));
         functionsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         petButton = new JButton("QUẢN LÝ HỒ SƠ THÚ CƯNG");
         ownerButton = new JButton("QUẢN LÝ HỒ SƠ CHỦ NUÔI");
         appointmentButton = new JButton("QUẢN LÝ LỊCH HẸN");
-        JButton medicalButton = new JButton("QUẢN LÝ HỒ SƠ Y TẾ");
+        medicalRecordButton = new JButton("QUẢN LÝ HỒ SƠ Y TẾ");
+        searchButton = new JButton("TÌM KIẾM & LỌC DỮ LIỆU");
         functionsPanel.add(petButton);
         functionsPanel.add(ownerButton);
         functionsPanel.add(appointmentButton);
-        functionsPanel.add(medicalButton);
+        functionsPanel.add(medicalRecordButton);
+        functionsPanel.add(searchButton);
         dashboardPanel.add(functionsPanel, BorderLayout.CENTER);
     }
-    
+
     public void showLogin() {
         clearFields();
         isLoginMode = true;
@@ -121,24 +125,52 @@ public class UserView extends JPanel {
         passwordField.setText("");
         usernameField.setText("");
     }
-    
-    public void showMessage(String message) { JOptionPane.showMessageDialog(this, message); }
-    
-    public String getUsername() { return usernameField.getText(); }
-    
-    public String getPassword() { return new String(passwordField.getPassword()); }
-    
-    public boolean isLoginMode() { return isLoginMode; }
 
-    public JButton getLoginButton() { return loginButton; }
-    
-    public JButton getRegisterButton() { return registerButton; }
-    
-    public JButton getLogoutButton() { return logoutButton; }
+    public void showMessage(String message) {
+        JOptionPane.showMessageDialog(this, message);
+    }
 
-    public JButton getPetButton() { return petButton; }
+    public String getUsername() {
+        return usernameField.getText();
+    }
 
-    public JButton getOwnerButton() { return ownerButton; }
-    
-    public JButton getAppointmentButton() { return appointmentButton; }
+    public String getPassword() {
+        return new String(passwordField.getPassword());
+    }
+
+    public boolean isLoginMode() {
+        return isLoginMode;
+    }
+
+    public JButton getLoginButton() {
+        return loginButton;
+    }
+
+    public JButton getRegisterButton() {
+        return registerButton;
+    }
+
+    public JButton getLogoutButton() {
+        return logoutButton;
+    }
+
+    public JButton getPetButton() {
+        return petButton;
+    }
+
+    public JButton getOwnerButton() {
+        return ownerButton;
+    }
+
+    public JButton getAppointmentButton() {
+        return appointmentButton;
+    }
+
+    public JButton getMedicalRecordButton() {
+        return medicalRecordButton;
+    }
+
+    public JButton getSearchButton() {
+        return searchButton;
+    }
 }

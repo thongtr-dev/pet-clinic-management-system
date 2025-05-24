@@ -2,8 +2,8 @@ package com.petclinic.view;
 
 import com.petclinic.controller.NavigationController;
 import com.petclinic.dao.PetDAO;
-import com.petclinic.dao.PetDAO;
 import com.petclinic.model.Pet;
+
 import java.awt.*;
 import java.sql.SQLException;
 import java.util.List;
@@ -54,16 +54,18 @@ public class PetView extends JPanel {
         backButton = new JButton("QUAY LẠI");
         headerPanel.add(backButton, BorderLayout.EAST);
         mainPanel.add(headerPanel, BorderLayout.NORTH);
-        String[] columnNames = {"ID", "TÊN", "LOÀI", "GIỐNG", "TUỔI", "TIỀN SỬ BỆNH", "CHỦ NUÔI", "TẠO LỊCH HẸN"};
-                tableModel = new DefaultTableModel(columnNames, 0) {
-                    @Override
-                    public boolean isCellEditable(int row, int column) { 
-                        return column == 7;
-                    }
-                };
+        String[] columnNames = {"ID", "TÊN", "LOÀI", "GIỐNG", "TUỔI", "TIỀN SỬ BỆNH", "CHỦ NUÔI", "TẠO LỊCH HẸN", "HỒ SƠ Y TẾ"};
+        tableModel = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 7 || column == 8;
+            }
+        };
         petTable = new JTable(tableModel);
-        petTable.getColumnModel().getColumn(7).setCellRenderer(new ButtonRenderer());
-        petTable.getColumnModel().getColumn(7).setCellEditor(new ButtonEditor(new JCheckBox()));
+        petTable.getColumnModel().getColumn(7).setCellRenderer(new ButtonRenderer("Lịch hẹn"));
+        petTable.getColumnModel().getColumn(7).setCellEditor(new AppointmentButtonEditor(new JCheckBox()));
+        petTable.getColumnModel().getColumn(8).setCellRenderer(new ButtonRenderer("Hồ sơ y tế"));
+        petTable.getColumnModel().getColumn(8).setCellEditor(new MedicalRecordButtonEditor(new JCheckBox()));
         petTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane tableScrollPane = new JScrollPane(petTable);
         mainPanel.add(tableScrollPane, BorderLayout.CENTER);
@@ -150,7 +152,7 @@ public class PetView extends JPanel {
     public void showPets(List<Pet> pets) {
         tableModel.setRowCount(0);
         for (Pet pet : pets) {
-            tableModel.addRow(new Object[]{pet.getId(), pet.getName(), pet.getSpecies(), pet.getBreed(), pet.getAge(), pet.getMedicalHistory(), pet.getOwnerDisplay(),null});
+            tableModel.addRow(new Object[]{pet.getId(), pet.getName(), pet.getSpecies(), pet.getBreed(), pet.getAge(), pet.getMedicalHistory(), pet.getOwnerDisplay(), null, null});
         }
     }
 
@@ -192,7 +194,9 @@ public class PetView extends JPanel {
         formDialog.setVisible(true);
     }
 
-    public void hideForm() { formDialog.setVisible(false); }
+    public void hideForm() {
+        formDialog.setVisible(false);
+    }
 
     public void clearFields() {
         idField.setText("");
@@ -213,11 +217,11 @@ public class PetView extends JPanel {
         medicalHistoryArea.setText(pet.getMedicalHistory());
         if (pet.getOwnerId() != null) {
             ownerIdField.setText(String.valueOf(pet.getOwnerId()));
-        }
-        else {
+        } else {
             ownerIdField.setText("");
         }
     }
+
     public void setOwnerId(int ownerId, boolean editable) {
         ownerIdField.setText(String.valueOf(ownerId));
         ownerIdField.setEditable(editable);
@@ -233,16 +237,15 @@ public class PetView extends JPanel {
         pet.setBreed(breedField.getText());
         try {
             pet.setAge(Integer.parseInt(ageField.getText()));
-        }
-        catch (NumberFormatException e) {
+        } catch (NumberFormatException e) {
             pet.setAge(0);
         }
         pet.setMedicalHistory(medicalHistoryArea.getText());
         if (!ownerIdField.getText().isEmpty()) {
             try {
                 pet.setOwnerId(Integer.parseInt(ownerIdField.getText()));
+            } catch (NumberFormatException e) {
             }
-            catch (NumberFormatException e) {}
         }
         return pet;
     }
@@ -255,48 +258,70 @@ public class PetView extends JPanel {
         return -1;
     }
 
-    public void showMessage(String message) { JOptionPane.showMessageDialog(this, message); }
-    
-    public JTable getPetTable() { return petTable; }
-    
-    public boolean isAddMode() { return isAddMode; }
+    public void showMessage(String message) {
+        JOptionPane.showMessageDialog(this, message);
+    }
 
-    public JButton getAddButton() { return addButton; }
+    public JTable getPetTable() {
+        return petTable;
+    }
 
-    public JButton getUpdateButton() { return updateButton; }
+    public boolean isAddMode() {
+        return isAddMode;
+    }
 
-    public JButton getDeleteButton() { return deleteButton; }
+    public JButton getAddButton() {
+        return addButton;
+    }
 
-    public JButton getRefreshButton() { return refreshButton; }
+    public JButton getUpdateButton() {
+        return updateButton;
+    }
 
-    public JButton getBackButton() { return backButton; }
+    public JButton getDeleteButton() {
+        return deleteButton;
+    }
 
-    public JButton getCancelButton() { return cancelButton; }
+    public JButton getRefreshButton() {
+        return refreshButton;
+    }
 
-    public JButton getConfirmButton() { return confirmButton; }
+    public JButton getBackButton() {
+        return backButton;
+    }
 
-    public JTextField getOwnerIdField() {return ownerIdField;}
+    public JButton getCancelButton() {
+        return cancelButton;
+    }
+
+    public JButton getConfirmButton() {
+        return confirmButton;
+    }
+
+    public JTextField getOwnerIdField() {
+        return ownerIdField;
+    }
 
     class ButtonRenderer extends JButton implements TableCellRenderer {
-        public ButtonRenderer() {
+        public ButtonRenderer(String buttonText) {
             setOpaque(true);
-            setText("Chọn");
+            setText(buttonText);
         }
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus, int row, int column) {
+                                                       boolean isSelected, boolean hasFocus, int row, int column) {
             return this;
         }
     }
 
-    class ButtonEditor extends DefaultCellEditor {
+    class AppointmentButtonEditor extends DefaultCellEditor {
         private JButton button;
         private int selectedRow;
 
-        public ButtonEditor(JCheckBox checkBox) {
+        public AppointmentButtonEditor(JCheckBox checkBox) {
             super(checkBox);
-            button = new JButton("Chọn");
+            button = new JButton("Lịch hẹn");
             button.setOpaque(true);
             button.addActionListener(e -> {
                 fireEditingStopped();
@@ -309,36 +334,68 @@ public class PetView extends JPanel {
 
         @Override
         public Component getTableCellEditorComponent(JTable table, Object value,
-                boolean isSelected, int row, int column) {
+                                                     boolean isSelected, int row, int column) {
             selectedRow = row;
             return button;
         }
     }
 
-    // Callback interface and field
+    class MedicalRecordButtonEditor extends DefaultCellEditor {
+        private JButton button;
+        private int selectedRow;
+
+        public MedicalRecordButtonEditor(JCheckBox checkBox) {
+            super(checkBox);
+            button = new JButton("Hồ sơ y tế");
+            button.setOpaque(true);
+            button.addActionListener(e -> {
+                fireEditingStopped();
+                int petId = (int) petTable.getValueAt(selectedRow, 0);
+                if (medicalRecordViewCallback != null) {
+                    medicalRecordViewCallback.openMedicalRecordForm(petId);
+                }
+            });
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value,
+                                                     boolean isSelected, int row, int column) {
+            selectedRow = row;
+            return button;
+        }
+    }
+
     private AppointmentViewCallback appointmentViewCallback;
+    private MedicalRecordViewCallback medicalRecordViewCallback;
 
     public interface AppointmentViewCallback {
         void openAppointmentForm(int petId);
+    }
+
+    public interface MedicalRecordViewCallback {
+        void openMedicalRecordForm(int petId);
     }
 
     public void setAppointmentViewCallback(AppointmentViewCallback callback) {
         this.appointmentViewCallback = callback;
     }
 
-    // Method to setup the callback with navigation
-    public void setupAppointmentViewCallback(NavigationController navigationController, 
-                                          AppointmentView appointmentView,
-                                          PetDAO petDAO) {
+    public void setMedicalRecordViewCallback(MedicalRecordViewCallback callback) {
+        this.medicalRecordViewCallback = callback;
+    }
+
+    public void setupAppointmentViewCallback(NavigationController navigationController,
+                                             AppointmentView appointmentView,
+                                             PetDAO petDAO) {
         this.setAppointmentViewCallback(petId -> {
             try {
                 Pet selectedPet = petDAO.getById(petId);
                 if (selectedPet != null) {
                     navigationController.navigateTo("APPOINTMENT_VIEW");
                     appointmentView.prepareForNewAppointment(
-                        selectedPet.getId(),
-                        selectedPet.getName(),
-                        selectedPet.getOwnerDisplay()
+                            selectedPet.getId(),
+                            selectedPet.getName(),
+                            selectedPet.getOwnerDisplay()
                     );
                 }
             } catch (SQLException ex) {
@@ -346,6 +403,27 @@ public class PetView extends JPanel {
             }
         });
     }
+
+    public void setupMedicalRecordViewCallback(NavigationController navigationController,
+                                               MedicalRecordView medicalRecordView,
+                                               PetDAO petDAO) {
+        this.setMedicalRecordViewCallback(petId -> {
+            try {
+                Pet selectedPet = petDAO.getById(petId);
+                if (selectedPet != null) {
+                    navigationController.navigateTo("MEDICAL_RECORD_VIEW");
+                    medicalRecordView.prepareForPetMedicalRecords(
+                            selectedPet.getId(),
+                            selectedPet.getName(),
+                            selectedPet.getOwnerDisplay()
+                    );
+                }
+            } catch (SQLException ex) {
+                showMessage("Lỗi khi lấy thông tin thú cưng: " + ex.getMessage());
+            }
+        });
+    }
+
     public String getSelectedPetOwnerInfo() {
         int selectedRow = petTable.getSelectedRow();
         if (selectedRow != -1) {

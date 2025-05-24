@@ -5,7 +5,11 @@ import com.petclinic.view.MainFrame;
 public class NavigationController {
     private final MainFrame mainFrame;
 
-    public NavigationController(MainFrame mainFrame) { this.mainFrame = mainFrame; }
+    public NavigationController(MainFrame mainFrame) {
+        this.mainFrame = mainFrame;
+    }
 
-    public void navigateTo(String viewName) { mainFrame.showView(viewName); }
+    public void navigateTo(String viewName) {
+        mainFrame.showView(viewName);
+    }
 }
