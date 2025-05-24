@@ -1,10 +1,12 @@
 package com.petclinic.view;
 
+import com.petclinic.controller.NavigationController;
 import com.petclinic.model.Owner;
 import java.awt.*;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
 
 public class OwnerView extends JPanel {
     private JPanel mainPanel;
@@ -47,13 +49,17 @@ public class OwnerView extends JPanel {
         backButton = new JButton("QUAY LẠI");
         headerPanel.add(backButton, BorderLayout.EAST);
         mainPanel.add(headerPanel, BorderLayout.NORTH);
-           String[] columnNames = {"ID", "TÊN", "EMAIL", "SỐ ĐIỆN THOẠI", "ĐỊA CHỈ"};
+           String[] columnNames = {"ID", "TÊN", "EMAIL", "SỐ ĐIỆN THOẠI", "ĐỊA CHỈ", "THÊM THÚ CƯNG"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
-            public boolean isCellEditable(int row, int column) { return false; }
+            public boolean isCellEditable(int row, int column) { 
+                return column == 5; 
+            }
         };
         
         ownerTable = new JTable(tableModel);
+        ownerTable.getColumnModel().getColumn(5).setCellRenderer(new ButtonRenderer()); 
+        ownerTable.getColumnModel().getColumn(5).setCellEditor(new ButtonEditor(new JCheckBox()));
         ownerTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         JScrollPane tableScrollPane = new JScrollPane(ownerTable);
         mainPanel.add(tableScrollPane, BorderLayout.CENTER);
@@ -130,6 +136,44 @@ public class OwnerView extends JPanel {
         formDialog.setContentPane(formPanel);
     }
 
+        class ButtonRenderer extends JButton implements TableCellRenderer {
+        public ButtonRenderer() {
+            setOpaque(true);
+            setText("Chọn");
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                boolean isSelected, boolean hasFocus, int row, int column) {
+            return this;
+        }
+    }
+
+    class ButtonEditor extends DefaultCellEditor {
+        private JButton button;
+        private int selectedRow;
+
+        public ButtonEditor(JCheckBox checkBox) {
+            super(checkBox);
+            button = new JButton("Chọn");
+            button.setOpaque(true);
+            button.addActionListener(e -> {
+                fireEditingStopped();
+                int ownerId = (int) ownerTable.getValueAt(selectedRow, 0);
+                if (petViewCallback != null) {
+                    petViewCallback.openPetAddForm(ownerId);
+                }
+            });
+        }
+
+        @Override
+        public Component getTableCellEditorComponent(JTable table, Object value,
+                boolean isSelected, int row, int column) {
+            selectedRow = row;
+            return button;
+        }
+    }
+    
     public void showOwners(List<Owner> owners) {
         tableModel.setRowCount(0);
         for (Owner owner : owners) {
@@ -224,4 +268,21 @@ public class OwnerView extends JPanel {
     public JButton getCancelButton() { return cancelButton; }
 
     public JButton getConfirmButton() { return confirmButton; }
+
+    private PetViewCallback petViewCallback;
+
+    public interface PetViewCallback {
+        void openPetAddForm(int ownerId);
+    }
+
+    public void setPetViewCallback(PetViewCallback callback) {
+        this.petViewCallback = callback;
+    }
+
+    public void setupPetViewCallback(NavigationController navigationController, PetView petView) {
+        this.setPetViewCallback(ownerId -> {
+            navigationController.navigateTo("PET_VIEW");
+            petView.showAddForm(ownerId);
+        });
+    }
 }

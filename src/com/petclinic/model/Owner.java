@@ -2,7 +2,7 @@ package com.petclinic.model;
 
 public class Owner {
     private int id;
-    private String fullName; // Đổi từ name sang fullName
+    private String fullName;
     private String email;
     private String phone;
     private String address;

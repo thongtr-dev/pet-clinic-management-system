@@ -16,6 +16,7 @@ public class UserView extends JPanel {
     private boolean isLoginMode = true;
     private JButton petButton;
     private JButton ownerButton;
+    private JButton appointmentButton;
 
     public UserView() {
         initializeAuthenticationPanel();
@@ -80,7 +81,7 @@ public class UserView extends JPanel {
         functionsPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         petButton = new JButton("QUẢN LÝ HỒ SƠ THÚ CƯNG");
         ownerButton = new JButton("QUẢN LÝ HỒ SƠ CHỦ NUÔI");
-        JButton appointmentButton = new JButton("QUẢN LÝ LỊCH HẸN");
+        appointmentButton = new JButton("QUẢN LÝ LỊCH HẸN");
         JButton medicalButton = new JButton("QUẢN LÝ HỒ SƠ Y TẾ");
         functionsPanel.add(petButton);
         functionsPanel.add(ownerButton);
@@ -138,4 +139,6 @@ public class UserView extends JPanel {
     public JButton getPetButton() { return petButton; }
 
     public JButton getOwnerButton() { return ownerButton; }
+    
+    public JButton getAppointmentButton() { return appointmentButton; }
 }

@@ -26,6 +26,7 @@ public class UserController {
         userView.getLogoutButton().addActionListener(e -> handleLogout());
         userView.getPetButton().addActionListener(e -> showPetView());
         userView.getOwnerButton().addActionListener(e -> showOwnerView());
+        userView.getAppointmentButton().addActionListener(e -> showAppointmentView());
     }
     
     private void handleLogin() {
@@ -96,9 +97,14 @@ public class UserController {
         }
     }
 
-        private void showOwnerView() {
+    private void showOwnerView() {
         if (navigationController != null) {
             navigationController.navigateTo("OWNER_VIEW");
+        }
+    }
+    private void showAppointmentView() {
+        if (navigationController != null) {
+            navigationController.navigateTo("APPOINTMENT_VIEW");
         }
     }
 }
