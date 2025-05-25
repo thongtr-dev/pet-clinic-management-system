@@ -220,14 +220,11 @@ public class AppointmentView extends JPanel {
     }
 
     public void showAddForm() {
-        clearFields();
         isAddMode = true;
         confirmButton.setText("THÊM MỚI");
         formDialog.setTitle("THÊM MỚI LỊCH HẸN");
         idField.setVisible(false);
         idLabel.setVisible(false);
-        formDialog.pack();
-        formDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
         formDialog.setVisible(true);
     }
 
@@ -404,18 +401,19 @@ public class AppointmentView extends JPanel {
     }
 
     public void prepareForNewAppointment(int petId, String petName, String ownerName) {
-        showAddForm();
         petIdField.setText(String.valueOf(petId));
         petNameField.setText(petName != null ? petName : "");
         ownerNameField.setText(ownerName != null ? ownerName : "");
-
+        
         petIdField.setEditable(false);
         petIdField.setBackground(Color.LIGHT_GRAY);
         petNameField.setEditable(false);
         petNameField.setBackground(Color.LIGHT_GRAY);
         ownerNameField.setEditable(false);
         ownerNameField.setBackground(Color.LIGHT_GRAY);
-
+        
+        showAddForm(); 
+    
         formDialog.pack();
         formDialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
     }
