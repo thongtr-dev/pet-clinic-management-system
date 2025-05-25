@@ -2,6 +2,7 @@ package com.petclinic.dao;
 
 import com.petclinic.model.Owner;
 import com.petclinic.util.DatabaseConnection;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class OwnerDAOImpl implements OwnerDAO {
-       @Override
+    @Override
     public boolean add(Owner owner) throws SQLException {
         String sql = "INSERT INTO owners (full_name, email, phone, address) VALUES (?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -66,11 +67,11 @@ public class OwnerDAOImpl implements OwnerDAO {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 return new Owner(
-                    rs.getInt("id"),
-                    rs.getString("full_name"),
-                    rs.getString("email"),
-                    rs.getString("phone"),
-                    rs.getString("address")
+                        rs.getInt("id"),
+                        rs.getString("full_name"),
+                        rs.getString("email"),
+                        rs.getString("phone"),
+                        rs.getString("address")
                 );
             }
             return null;
@@ -79,18 +80,18 @@ public class OwnerDAOImpl implements OwnerDAO {
 
     @Override
     public List<Owner> getAll() throws SQLException {
-        String sql = "SELECT * FROM owners"; 
+        String sql = "SELECT * FROM owners";
         List<Owner> owners = new ArrayList<>();
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
                 owners.add(new Owner(
-                    rs.getInt("id"),
-                    rs.getString("full_name"),
-                    rs.getString("email"),
-                    rs.getString("phone"),
-                    rs.getString("address")
+                        rs.getInt("id"),
+                        rs.getString("full_name"),
+                        rs.getString("email"),
+                        rs.getString("phone"),
+                        rs.getString("address")
                 ));
             }
         }

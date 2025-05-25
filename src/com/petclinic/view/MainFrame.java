@@ -17,7 +17,11 @@ public class MainFrame extends JFrame {
         add(mainPanel);
     }
 
-    public void addView(JPanel view, String name) { mainPanel.add(view, name); }
+    public void addView(JPanel view, String name) {
+        mainPanel.add(view, name);
+    }
 
-    public void showView(String name) { cardLayout.show(mainPanel, name); }
+    public void showView(String name) {
+        cardLayout.show(mainPanel, name);
+    }
 }

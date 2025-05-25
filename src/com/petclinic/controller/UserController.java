@@ -4,6 +4,7 @@ import com.petclinic.dao.UserDAO;
 import com.petclinic.model.User;
 import com.petclinic.util.SessionManager;
 import com.petclinic.view.UserView;
+
 import java.sql.SQLException;
 
 public class UserController {
@@ -11,7 +12,7 @@ public class UserController {
     private final UserDAO userDAO;
     private final SessionManager sessionManager;
     private final NavigationController navigationController;
-    
+
     public UserController(UserView userView, UserDAO userDAO, NavigationController navigationController) {
         this.userView = userView;
         this.userDAO = userDAO;
@@ -19,7 +20,7 @@ public class UserController {
         this.navigationController = navigationController;
         attachEventListeners();
     }
-    
+
     private void attachEventListeners() {
         userView.getLoginButton().addActionListener(e -> handleLogin());
         userView.getRegisterButton().addActionListener(e -> handleRegister());
@@ -27,8 +28,10 @@ public class UserController {
         userView.getPetButton().addActionListener(e -> showPetView());
         userView.getOwnerButton().addActionListener(e -> showOwnerView());
         userView.getAppointmentButton().addActionListener(e -> showAppointmentView());
+        userView.getMedicalRecordButton().addActionListener(e -> showMedicalRecordView());
+        userView.getSearchButton().addActionListener(e -> showSearchView());
     }
-    
+
     private void handleLogin() {
         if (userView.isLoginMode()) {
             String username = userView.getUsername();
@@ -42,25 +45,21 @@ public class UserController {
                 if (user != null) {
                     sessionManager.login(user);
                     userView.showDashboard();
-                }
-                else {
+                } else {
                     userView.showMessage("Tài khoản hoặc mật khẩu không hợp lệ!");
                 }
-            }
-            catch (SQLException ex) {
+            } catch (SQLException ex) {
                 userView.showMessage("Database error: " + ex.getMessage());
             }
-        }
-        else {
+        } else {
             userView.showLogin();
         }
     }
-    
+
     private void handleRegister() {
         if (userView.isLoginMode()) {
             userView.showRegister();
-        }
-        else {
+        } else {
             String username = userView.getUsername();
             String password = userView.getPassword();
             if (username.isEmpty() || password.isEmpty()) {
@@ -75,12 +74,10 @@ public class UserController {
                     User user = userDAO.verify(username, password);
                     sessionManager.login(user);
                     userView.showDashboard();
-                }
-                else {
+                } else {
                     userView.showMessage("Tài khoản đã tồn tại!");
                 }
-            }
-            catch (SQLException ex) {
+            } catch (SQLException ex) {
                 userView.showMessage("Database error: " + ex.getMessage());
             }
         }
@@ -102,9 +99,22 @@ public class UserController {
             navigationController.navigateTo("OWNER_VIEW");
         }
     }
+
     private void showAppointmentView() {
         if (navigationController != null) {
             navigationController.navigateTo("APPOINTMENT_VIEW");
+        }
+    }
+
+    private void showMedicalRecordView() {
+        if (navigationController != null) {
+            navigationController.navigateTo("MEDICAL_RECORD_VIEW");
+        }
+    }
+
+    private void showSearchView() {
+        if (navigationController != null) {
+            navigationController.navigateTo("SEARCH_VIEW");
         }
     }
 }

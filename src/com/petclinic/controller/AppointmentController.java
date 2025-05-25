@@ -5,6 +5,7 @@ import com.petclinic.dao.PetDAO;
 import com.petclinic.model.Appointment;
 import com.petclinic.util.SessionManager;
 import com.petclinic.view.AppointmentView;
+
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,10 +18,10 @@ public class AppointmentController {
     private final SessionManager sessionManager;
     private final NavigationController navigationController;
 
-    public AppointmentController(AppointmentView appointmentView, 
-                               AppointmentDAO appointmentDAO,
-                               PetDAO petDAO,
-                               NavigationController navigationController) {
+    public AppointmentController(AppointmentView appointmentView,
+                                 AppointmentDAO appointmentDAO,
+                                 PetDAO petDAO,
+                                 NavigationController navigationController) {
         this.appointmentView = appointmentView;
         this.appointmentDAO = appointmentDAO;
         this.petDAO = petDAO;
@@ -123,8 +124,8 @@ public class AppointmentController {
         }
         int appointmentId = appointmentView.getSelectedAppointment();
 
-        int confirm = JOptionPane.showConfirmDialog(appointmentView, 
-            "Bạn có chắc chắn muốn xóa lịch hẹn này không?", "Thông báo", JOptionPane.YES_NO_OPTION);
+        int confirm = JOptionPane.showConfirmDialog(appointmentView,
+                "Bạn có chắc chắn muốn xóa lịch hẹn này không?", "Thông báo", JOptionPane.YES_NO_OPTION);
         if (confirm == JOptionPane.YES_OPTION) {
             try {
                 boolean success = appointmentDAO.delete(appointmentId);
